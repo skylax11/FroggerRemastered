@@ -35,12 +35,15 @@ public class InputManager : MonoBehaviour
 
     public void OnJump(InputValue input)
     {
+        animator.SetBool("GetReady", true);
+
         playerController.WillJump = true;
         _continuesTime = Time.time;
         _pastTime = _pastTime == 0 ? Time.time : _pastTime;
 
-        if(input.Get<Vector2>() == Vector2.zero)
+        if(input.Get<Vector2>() == Vector2.zero) // second input turns (0,0) when we stopped pushing space bar. 
         {
+
             float magnitude = (_continuesTime - _pastTime)*20f;
 
             magnitude = magnitude > 50 ? 50 : magnitude; 
@@ -61,6 +64,11 @@ public class InputManager : MonoBehaviour
         {
             SetMove(input.Get<Vector2>());
         }
+    }
+    public void OnReset()
+    {
+        print("a");
+        PlayerController.instance.ResetRotation = true;
     }
     public void SetMove(Vector2 vector)
     {
