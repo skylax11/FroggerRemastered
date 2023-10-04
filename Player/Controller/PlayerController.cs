@@ -19,6 +19,7 @@ public class PlayerController : MonoBehaviour
     public bool WillJump;
     public bool ResetRotation;
     public bool isVertical;
+    public bool stayVertical;
 
     [Header("Singleton")]
     public static PlayerController instance;
@@ -76,22 +77,24 @@ public class PlayerController : MonoBehaviour
         }
     }
     
-    public void Rotate(Vector2 direction)
+    public void Rotate(Vector2 direction)   // COULD BE BETTER
     {
+        if ((_rotation <= 0.1f && _rotation > 0) && InputManager.Instance.isResetted ) {stayVertical = true; ResetRotation = false ;InputManager.Instance.isResetted = false; }
+
         if (_rotation == 0f)
         {
             isVertical = true;
             ResetRotation = false;
             _rotation = Mathf.Lerp(_rotation, direction.x * Mathf.Rad2Deg * 0.78f, Time.deltaTime * 2f);
         }
-        else if (_rotation != 0f && !ResetRotation)
+        else if ((_rotation != 0f && !ResetRotation) && !stayVertical)
         {
             isVertical = false;
             float oldRotation = _rotation;
             _rotation = Mathf.Lerp(_rotation, oldRotation + direction.x * Mathf.Rad2Deg * 0.78f, Time.deltaTime * 2f);
             _rotation = Mathf.Clamp(_rotation, -90f, 90f);
         }
-        else if (ResetRotation)
+        else if (ResetRotation && stayVertical)
         {
             isVertical = true;
             _rotation = Mathf.Lerp(_rotation, 0f, Time.deltaTime * 2f);
@@ -103,7 +106,13 @@ public class PlayerController : MonoBehaviour
         Vector3 temp = transform.position;
 
         Vector3 vertical = new Vector3(0f, 1f*magnitude/100, 0f);
+
         rigidBody.AddForce((transform.forward + vertical) * magnitude);
         JumpForce = magnitude;
+        MenuManager.Instance.playerProps.score += 10;
+    }
+    public void Save()
+    {
+        JSONdatabase.instance.Save(MenuManager.Instance.playerProps);
     }
 }

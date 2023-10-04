@@ -12,6 +12,7 @@ public class InputManager : MonoBehaviour
     public Vector2 move;
     public bool turning;
     public bool onAir;
+    public bool isResetted;
     private float _continuesTime;
     private float _pastTime;
     private PlayerController playerController;
@@ -62,13 +63,20 @@ public class InputManager : MonoBehaviour
     {
         if (input.Get<Vector2>() != Vector2.zero)
         {
+            playerController.stayVertical = false;
             SetMove(input.Get<Vector2>());
         }
     }
     public void OnReset()
     {
-        print("a");
-        PlayerController.instance.ResetRotation = true;
+        playerController.ResetRotation = true;
+        playerController.isVertical = true;
+        playerController.stayVertical = true;
+        SetReset(true);
+    }
+    public void OnSave()
+    {
+        PlayerController.instance.Save();
     }
     public void SetMove(Vector2 vector)
     {
@@ -81,5 +89,9 @@ public class InputManager : MonoBehaviour
     public void SetOnAir(bool onAir)
     {
         this.onAir = onAir;
+    }
+    public void SetReset(bool isResetted)
+    {
+        this.isResetted = isResetted;
     }
 }
