@@ -15,6 +15,11 @@ public class MenuManager : MonoBehaviour
     [SerializeField] GameObject _character;
     [SerializeField] GameObject _scoreBoard;
     [SerializeField] GameObject _howToPlay;
+    [SerializeField] GameObject _settings;
+
+    [SerializeField] AudioSource _source;
+    [SerializeField] AudioClip[] _musics;
+
 
     [SerializeField] UnityEngine.UI.Image[] colors;
     [SerializeField] Material _characterColor;
@@ -32,17 +37,23 @@ public class MenuManager : MonoBehaviour
     }
     private void Start()
     {
+        _source.clip = _musics[Random.Range(0,3)];
+        _source.Play();
         playerProps = new PlayerProps();
         playerProps.color[0] = _characterColor.color.r;
         playerProps.color[1] = _characterColor.color.g;
         playerProps.color[2] = _characterColor.color.b;
+        DontDestroyOnLoad(gameObject);
     }
-    
     public void Play()
     {
         _buttons.SetActive(false);
         _cameraAnimator.SetBool("play", true);
         StartCoroutine("FrogCustomizeMenu");
+    }
+    public void SetSound(float value)
+    {
+        _source.volume = value;
     }
     IEnumerator FrogCustomizeMenu()
     {
@@ -79,6 +90,7 @@ public class MenuManager : MonoBehaviour
         _buttons.SetActive(true);
         _scoreBoard.SetActive(false);
         _howToPlay.SetActive(false);
+        _settings.SetActive(false);
     }
     public void HowToPlay()
     {
@@ -92,6 +104,11 @@ public class MenuManager : MonoBehaviour
             _buttons.SetActive(false);
             _scoreBoard.SetActive(true);
         }
+    }
+    public void Setting()
+    {
+        _settings.SetActive(true);
+        _buttons.SetActive(false);
     }
     public void LoadDatas()
     {

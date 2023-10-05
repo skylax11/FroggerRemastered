@@ -8,7 +8,8 @@ public class JSONdatabase : MonoBehaviour
 {
     public static JSONdatabase instance;
     public List<PlayerProps> scoreList;
-    private bool isBetter;
+    private bool _isBetter;
+    private bool _doesExist = false;
     private void Awake()
     {
         if (instance == null)
@@ -33,40 +34,41 @@ public class JSONdatabase : MonoBehaviour
                 scoreList.Add(data);
             }
         }
-        print(scoreList.Count);
         scoreList = scoreList.OrderBy(x => x.score).ToList();
-        print(scoreList.Count);
         DontDestroyOnLoad(gameObject);
         DisplayScoreTable(scoreList);
     }
     public void Save(PlayerProps data)
     {
-        print(data.score);
         for (int i = 0; i < 5; i++)
         {
             if(!File.Exists(Application.dataPath + "/databaseFile" + i + ".json"))
             {
+                print("a");
+                _doesExist = true;
                 data.JsonId = i;
                 string json_write = JsonUtility.ToJson(data, true);
                 File.WriteAllText(Application.dataPath + "/databaseFile" + i + ".json", json_write);
-                return;
+                break;
             }
         }
-        for (int i = 0; i < 5; i++)
+        if(!_doesExist)
         {
-            print(scoreList[i].score);
-            print(i + " " + scoreList[i].JsonId + " " + scoreList[i].name);
-            string json_read = File.ReadAllText(Application.dataPath + "/databaseFile" + scoreList[i].JsonId + ".json"); // starts from the lowest
-            PlayerProps _data = JsonUtility.FromJson<PlayerProps>(json_read);
-            print(_data.name +" "+_data.score);
-           if (data.score > _data.score)
-           {
-                string json_write = JsonUtility.ToJson(data, true);
-                File.WriteAllText(Application.dataPath + "/databaseFile" + scoreList[i].JsonId + ".json", json_write);
-                break;
-           }
-            
+            for (int i = 0; i < 5; i++)
+            {
+                string json_read = File.ReadAllText(Application.dataPath + "/databaseFile" + scoreList[i].JsonId + ".json"); // starts from the lowest
+                PlayerProps _data = JsonUtility.FromJson<PlayerProps>(json_read);
+                print(data.score + "  " + _data.score);
+                if (data.score > _data.score)
+                {
+                    string json_write = JsonUtility.ToJson(data, true);
+                    File.WriteAllText(Application.dataPath + "/databaseFile" + scoreList[i].JsonId + ".json", json_write);
+                    break;
+                }
+
+            }
         }
+        
     }
     public void Load()
     {

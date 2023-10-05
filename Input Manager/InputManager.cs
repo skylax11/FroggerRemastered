@@ -61,8 +61,9 @@ public class InputManager : MonoBehaviour
     }
     public void OnMove(InputValue input)
     {
-        if (input.Get<Vector2>() != Vector2.zero)
+        if ((input.Get<Vector2>() != Vector2.zero) && !turning)
         {
+            turning = true;
             playerController.stayVertical = false;
             SetMove(input.Get<Vector2>());
         }
@@ -73,10 +74,6 @@ public class InputManager : MonoBehaviour
         playerController.isVertical = true;
         playerController.stayVertical = true;
         SetReset(true);
-    }
-    public void OnSave()
-    {
-        PlayerController.instance.Save();
     }
     public void SetMove(Vector2 vector)
     {
